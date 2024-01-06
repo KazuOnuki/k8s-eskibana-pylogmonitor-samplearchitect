@@ -1,0 +1,48 @@
+﻿version: "2.2"
+services:
+  create-escert:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    volumes:
+      - ./config/:/usr/share/elasticsearch/config/
+    user: "0"
+    command: >
+      bash -c '
+        create_certificate() {
+          if [ ! -f config/certs/ca.zip ]; then
+            echo "Creating CA";
+            bin/elasticsearch-certutil ca --silent --pem -out config/certs/ca.zip;
+            unzip config/certs/ca.zip -d config/certs;
+          fi;
+
+          if [ ! -f config/certs/certs.zip ]; then
+            echo "Creating certs";
+            echo -ne \
+            "instances:\n"\
+            "  - name: es01\n"\
+            "    dns:\n"\
+            "      - es01\n"\
+            "      - localhost\n"\
+            > config/certs/instances.yml;
+            bin/elasticsearch-certutil cert --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
+            unzip config/certs/certs.zip -d config/certs;
+          fi;
+        }
+
+        create_certificate
+
+        echo "Creating Kibana.yml";
+        cat <<'EOF' > config/kibana.yml
+        server.name: kibana
+        server.host: "0.0.0.0"
+        elasticsearch.hosts: ["https://es01:9200"]
+        elasticsearch.username: kibana_system
+        elasticsearch.password: kibana
+        elasticsearch.ssl.certificate: config/certs/es01.crt
+        elasticsearch.ssl.key: config/certs/es01.key
+        elasticsearch.ssl.certificateAuthorities: config/certs/ca.crt
+      '
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f config/certs/es01/es01.crt ]"]
+      interval: 1s
+      timeout: 5s
+      retries: 120

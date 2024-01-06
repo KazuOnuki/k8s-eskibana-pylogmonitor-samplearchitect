@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.version: 1.31.2 (a92241f79)
+  labels:
+    io.kompose.service: kibana
+  name: kibana
+spec:
+  type: NodePort    #one of NodePor / LoadBalancer(aks 等の cloud provider の場合はこちらを指定して外部からアクセス可能なLoadBalancerを作成)
+  ports:
+    - name: "5601"
+      port: 5601
+      targetPort: 5601
+  selector:
+    io.kompose.service: kibana
+status:
+  loadBalancer: {}

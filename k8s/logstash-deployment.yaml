@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.version: 1.31.2 (a92241f79)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: logstash
+  name: logstash
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: logstash
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.version: 1.31.2 (a92241f79)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/sample-pylogger-azblob-eskibana-default: "true"
+        io.kompose.service: logstash
+    spec:
+      containers:
+        - args:
+            - bash
+            - -c
+            - ' logstash-plugin install logstash-input-azure_blob_storage && logstash -f /usr/share/logstash/config/logstash.conf '
+          env:
+            - name: ELASTICSEARCH_PASSWORD
+              value: logstash_internal
+            - name: ELASTICSEARCH_USERNAME
+              value: logstash_internal
+            - name: ES_JAVA_OPTS
+              value: -Xmx2048m -Xms2048m"
+            - name: http.host
+              value: 0.0.0.0
+            - name: path.config
+              value: /usr/share/logstash/config/logstash.conf
+            - name: xpack.monitoring.elasticsearch.url
+              value: https://es01:9200
+            - name: xpack.monitoring.enabled
+              value: "false"
+          image: logstash:8.9.2
+          livenessProbe:
+            exec:
+              command:
+                - curl -s -I http://localhost:9600 | grep -q 'HTTP/1.1 200 OK'
+            failureThreshold: 120
+            periodSeconds: 10
+            timeoutSeconds: 10
+          name: logstash
+          ports:
+            - containerPort: 9600
+              hostPort: 9600
+              protocol: TCP
+          resources: {}
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - mountPath: /usr/share/logstash/config/certs
+              name: certs
+            - mountPath: /usr/share/logstash/config
+              name: logstash-claim1
+      restartPolicy: Always
+      volumes:
+        - name: certs
+          persistentVolumeClaim:
+            claimName: certs
+        - name: logstash-claim1
+          persistentVolumeClaim:
+            claimName: logstash-claim1
+status: {}

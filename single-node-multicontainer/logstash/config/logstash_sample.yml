@@ -1,0 +1,2 @@
+﻿# NOTE: if content is empty, it's ok.
+## logstash container requires `config/logstash.yml` so, we create empty config yaml file.

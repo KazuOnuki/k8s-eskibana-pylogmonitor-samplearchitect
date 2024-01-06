@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.version: 1.31.2 (a92241f79)
+  labels:
+    io.kompose.service: kibana
+  name: kibana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: kibana
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.version: 1.31.2 (a92241f79)
+      labels:
+        io.kompose.network/sample-pylogger-azblob-eskibana-default: "true"
+        io.kompose.service: kibana
+    spec:
+      containers:
+        - env:
+          - name: server.port
+            value: "5601"
+          - name: server.name
+            value: kibana
+          - name: elasticsearch.hosts
+            value: https://es01:9200
+          - name: elasticsearch.username
+            value: kibana_system
+          - name: elasticsearch.password
+            value: kibana
+          - name: elasticsearch.ssl.certificate
+            value: config/certs/es01.crt
+          - name: elasticsearch.ssl.key
+            value: config/certs/es01.key
+          - name: elasticsearch.ssl.certificateAuthorities
+            value: config/certs/ca.crt
+          image: docker.elastic.co/kibana/kibana:8.9.2
+          livenessProbe:
+            exec:
+              command:
+                - bash
+                - -c
+                - 'curl -s -I http://localhost:5601 | grep -q "HTTP/1.1"'
+            failureThreshold: 120
+            periodSeconds: 10
+            timeoutSeconds: 10
+            initialDelaySeconds: 100
+          name: kibana
+          ports:
+            - containerPort: 5601
+              hostPort: 5601
+              protocol: TCP
+          resources:
+            limits:
+              memory: "1073741824"
+          volumeMounts:
+            - mountPath: /usr/share/kibana/config/certs   # NOTE: SSL resources should be placed in the [/usr/share/elasticsearch/config] directory"
+              name: certs
+            - mountPath: /usr/share/kibana/config/kibana.yml   # NOTE: SSL resources should be placed in the [/usr/share/elasticsearch/config] directory"
+              name: certs
+              subPath: kibana.yml
+      restartPolicy: Always
+      volumes:
+        - name: certs
+          configMap:
+            name: es-certs-configmap  # 共有の ConfigMap を指定
+status: {}
