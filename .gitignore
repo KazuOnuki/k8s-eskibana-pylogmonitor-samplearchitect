@@ -15,3 +15,9 @@ k8s/01-configMap.yaml
 single-node-multicontainer/logstash/config/certs/**
 single-node-multicontainer/logstash/config/logstash.conf
 single-node-multicontainer/logstash/config/logstash.yml
+single-node-multicontainer/docker-compose-resolve.yml
+
+memo.txt
+
+# visualization cache
+.cache/**
