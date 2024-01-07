@@ -17,7 +17,8 @@ single-node-multicontainer/logstash/config/logstash.conf
 single-node-multicontainer/logstash/config/logstash.yml
 single-node-multicontainer/docker-compose-resolve.yml
 # visualization cache
-single-node-multicontainer/.cache/**
+single-node-multicontainer/.ca
 
 memo.txt
+
 
