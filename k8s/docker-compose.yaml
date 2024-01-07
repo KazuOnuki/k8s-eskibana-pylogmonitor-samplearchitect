@@ -28,7 +28,13 @@ services:
           fi;
         }
 
-        create_certificate
+        # command to create config/certs
+        if [ ! -d config/certs ]; then
+          echo "creation step of config/certs";
+          mkdir -p config/certs;
+        fi;
+
+        create_certificate;
 
         echo "Creating Kibana.yml";
         cat <<'EOF' > config/kibana.yml

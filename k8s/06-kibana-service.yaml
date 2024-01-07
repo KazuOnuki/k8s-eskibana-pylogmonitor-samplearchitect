@@ -1,8 +1,6 @@
 apiVersion: v1
 kind: Service
 metadata:
-  annotations:
-    kompose.version: 1.31.2 (a92241f79)
   labels:
     io.kompose.service: kibana
   name: kibana

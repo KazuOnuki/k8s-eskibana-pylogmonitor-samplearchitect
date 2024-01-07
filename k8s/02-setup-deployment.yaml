@@ -2,10 +2,7 @@
 # Deploymentは複数のReplicaSetを管理することで、ローリングアップデートやロールバックなどを実現可能にするリソースです。
 apiVersion: apps/v1
 kind: Deployment  # replica set (Podのレプリカを生成し、指定した数のPodを維持し続けるリソース) を管理するリソース
-
 metadata:  # オブジェクトを一意に特定するための情報
-  annotations:  # 識別用途でない任意のメタデータをオブジェクトに割り当てるためにアノテーションを使用 (ref: https://kubernetes.io/ja/docs/concepts/overview/working-with-objects/annotations/)
-    kompose.version: 1.31.2 (a92241f79)
   labels:  # 効率的な検索・閲覧を可能にし、UIやCLI上での利用に最適です。 識別用途でない情報は、アノテーションを用いて記録されるべき (ref: https://kubernetes.io/ja/docs/concepts/overview/working-with-objects/labels/#ラベルを使う動機)
     io.kompose.service: setup
   name: setup  # そのタイプのリソースに固有の名前  (ref: https://kubernetes.io/ja/docs/concepts/overview/working-with-objects/names/)
@@ -17,8 +14,6 @@ spec:  # レプリカセット spec
       io.kompose.service: setup  # ラベル es01 にあったレプリカを作成する指令
   template:  # Pod テンプレート
     metadata:
-      annotations:  # 識別用途ではない任意のメタデータ
-        kompose.version: 1.31.2 (a92241f79)
       labels:
         io.kompose.network/sample-pylogger-azblob-eskibana-default: "true"
         io.kompose.service: setup

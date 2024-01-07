@@ -1,8 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment  # レプリカセット(指定 pod 数を維持するリソース)を管理するリソース
 metadata:
-  annotations:  # 識別用とは別のあくまでもアノテーションにすぎないもの
-    kompose.version: 1.31.2 (a92241f79)
   labels:  # 識別用 / 効率的な検索・閲覧を可能にし、UIやCLI上での利用に最適
     io.kompose.service: es01
   name: es01  # タイプの固有名
@@ -16,8 +14,6 @@ spec:  # レプリカ 仕様(spec) 定義
     type: Recreate
   template:  # レプリカで用いられる POD テンプレート
     metadata:
-      annotations:
-        kompose.version: 1.31.2 (a92241f79)
       labels:
         io.kompose.network/sample-pylogger-azblob-eskibana-default: "true"
         io.kompose.service: es01

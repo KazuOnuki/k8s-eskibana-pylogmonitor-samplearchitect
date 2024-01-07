@@ -253,7 +253,7 @@ services:
         logstash -f /usr/share/logstash/config/logstash.conf
       '
     ports:
-      - "9600:9600"
+      - "${LOGSTASH_PORT}:9600"
     depends_on:
       kibana:
         condition: service_healthy
