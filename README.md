@@ -22,43 +22,90 @@ Before you begin, make sure you have Docker and Docker Compose installed on your
 
 > pls check [How to read the graph](https://github.com/pmsipilot/docker-compose-viz#how-to-read-the-graph) of my favorite repository `pmsipilot/docker-compose-viz` about each diagrams.
 
-#### Usage
-1. Clone this repository:
-   ```bash
-   git clone <repository-url>
-   ```
+-----
+#### Case 1 (k8s Architecture) Usage
+```bash
 
-1. Navigate to the cloned directory:
-    ```bash
-    cd <repository-directory>/single-node-multicontainer
-    ```
+# navigate to k8s dir
+cd k8s
 
-1. Create a .env file with the following environment variables:
-    ```env
-    ELASTIC_PASSWORD=<your-elastic-password>
-    KIBANA_PASSWORD=<your-kibana-password>
-    LOGSTASH_INTERNAL_PASSWORD=<your-logstash-internal-password>
-    ```
-1. Run the Docker Compose configuration:
-    ```bash
-    docker-compose up -d
-    ```
-    > This command will start Elasticsearch, Kibana, and Logstash containers.
-    Wait for the services to be healthy:
+# Step 1: Delete the Kubernetes namespace "eskibana"
+kubectl delete ns eskibana
 
-    ```bash
-    docker-compose ps
-    ```
-1. Access Kibana:
+# Step 2: Start Docker Compose
+docker-compose up
+```
+
+```yaml
+# Step 3:  create k8s/config/logstash.conf like below
+input {
+  azure_blob_storage
+  {
+      storageaccount => "<your storage account>"
+      access_key => "<your access key>"
+      container => "<your container log>"
+  }
+}
+# as you like, you customeze grok pattern👍
+filter {
+  grok {
+      match => { "message" => "%{LOGLEVEL:loglevel} %{USERNAME:username} %{TIMESTAMP_ISO8601:timestamp} %{GREEDYDATA:message}" }
+    }
+}
+output {
+  elasticsearch {
+    hosts => ["https://<your-elasticsearch-container-name>:9200/"]
+    index => "<your-any-index>"
+    cacert => "/usr/share/logstash/config/certs/ca/ca.crt"
+    # User with Elasticsearch role to control the Elasticsearch index
+    user => " <your-elastic-search-username> eg. logstash_internal"
+    # User's password
+    password => "<your-elastic-search-password eg. logstash_internal>" 
+  }
+  stdout {}
+}
+```
+
+```bash
+# Step 4: Export configuration data(config/**) to "./manifest/01-configMap.yaml"
+# export config/ data to ./manifest/01-configMap.yaml manifest
+4. kubectl create configmap es-certs-configmap --from-file=config/certs/ca.zip --from-file=config/certs/certs.zip --from-file=config/certs/instances.yml --from-file=config/certs/es01/es01.crt --from-file=config/certs/es01/es01.key --from-file=config/certs/ca/ca.crt --from-file=config/certs/ca/ca.key --from-file=config/kibana.yml --from-file=config/logstash.conf --from-file=config/logstash.yml --dry-run=client -o yaml > ./manifest/01-configMap.yaml
+
+# Step 5: Create the Kubernetes namespace "eskibana"
+5. kubectl create ns eskibana
+
+# Step 6: Apply manifests within "./manifest" to the "eskibana" namespace
+6. kubectl apply -f ./manifest -n eskibana
+```
+
+
+#### Case 2 (Docker Compose Architecture) Usage
+```bash
+
+# navigate to k8s dir
+cd single-node-multicontainer
+
+# Step 1: create docker compose
+docker-compose up
+
+
+# Step 2: Start Docker Compose
+docker-compose up
+
+#  This command will start Elasticsearch, Kibana, and Logstash containers.
+docker-compose ps
+```
+
+**Finally we start sending logs to Logstash and explore your data in Kibana!!**
+
 Open your browser and go to `http://localhost:5601` to access Kibana.
 Log in with the following credentials:
-    ```env
-    Username: kibana_system
-    Password: <your-kibana-password>
-    ```
-1. Start sending logs to Logstash and explore your data in Kibana.
+```env
+Username: <your-elastic-search-username eg. elastic>
+Password: <your-elastic-search-pass eg. elastic>
+```
 
-    >Additional Information
-    Elasticsearch is accessible at https://localhost:9200.
-    Logstash is available on http://localhost:9600 for data exporting internally.
-    Feel free to customize the Docker Compose file and configurations based on your specific requirements.
+>Additional Information
+Elasticsearch is accessible at https://localhost:9200.
+Logstash is used for data-exporting internally.
+Feel free to customize the Docker Compose file and configurations based on your specific requirements.
