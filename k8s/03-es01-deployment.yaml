@@ -1,70 +1,70 @@
 apiVersion: apps/v1
-kind: Deployment  # レプリカセット(指定 pod 数を維持するリソース)を管理するリソース
+kind: Deployment
 metadata:
-  labels:  # 識別用 / 効率的な検索・閲覧を可能にし、UIやCLI上での利用に最適
+  labels:
     io.kompose.service: es01
-  name: es01  # タイプの固有名
-
-spec:  # レプリカ 仕様(spec) 定義
-  replicas: 1  # レプリカ (pod の指定維持数) は 1
+  name: es01
+spec:
+  replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: es01  # ラベル es01 にあったレプリカを作成する指令
+      io.kompose.service: es01
   strategy:
     type: Recreate
-  template:  # レプリカで用いられる POD テンプレート
+  template:
     metadata:
       labels:
         io.kompose.network/sample-pylogger-azblob-eskibana-default: "true"
         io.kompose.service: es01
     spec:
       containers:
-        - env:
-          - name: network.host
-            value: "0.0.0.0"
-          - name: http.port
-            value: "9200"
-          - name: transport.host
-            value: localhost
-          - name: transport.port
-            value: "9300"
-          - name: ELASTIC_PASSWORD
-            value: elastic
-          - name: bootstrap.memory_lock
-            value: "true"
-          - name: cluster.initial_master_nodes
-            value: es01
-          - name: cluster.name
-            value: docker-cluster
-          - name: node.name
-            value: es01
-          - name: xpack.license.self_generated.type
-            value: basic
-          - name: xpack.security.enabled
-            value: "true"
-          - name: xpack.security.http.ssl.certificate
-            value: certs/es01.crt  # NOTE: SSL resources should be placed in the [/usr/share/elasticsearch/config] directory"
-          - name: xpack.security.http.ssl.certificate_authorities
-            value: certs/ca.crt
-          - name: xpack.security.http.ssl.enabled
-            value: "true"
-          - name: xpack.security.http.ssl.key
-            value: certs/es01.key
-          - name: xpack.security.transport.ssl.certificate
-            value: certs/es01.crt
-          - name: xpack.security.transport.ssl.certificate_authorities
-            value: certs/ca.crt
-          - name: xpack.security.transport.ssl.enabled
-            value: "true"
-          - name: xpack.security.transport.ssl.key
-            value: certs/es01.key
-          - name: xpack.security.transport.ssl.verification_mode
-            value: certificate
-          - name: xpack.security.enrollment.enabled
-            value: "true"
+        - name: es01
           image: docker.elastic.co/elasticsearch/elasticsearch:8.9.2
+          env:
+            - name: network.host
+              value: "0.0.0.0"
+            - name: http.port
+              value: "9200"
+            - name: transport.host
+              value: localhost
+            - name: transport.port
+              value: "9300"
+            - name: ELASTIC_PASSWORD
+              value: elastic
+            - name: bootstrap.memory_lock
+              value: "true"
+            - name: cluster.initial_master_nodes
+              value: es01
+            - name: cluster.name
+              value: docker-cluster
+            - name: node.name
+              value: es01
+            - name: xpack.license.self_generated.type
+              value: basic
+            - name: xpack.security.enabled
+              value: "true"
+            - name: xpack.security.http.ssl.certificate
+              value: certs/es01.crt
+            - name: xpack.security.http.ssl.certificate_authorities
+              value: certs/ca.crt
+            - name: xpack.security.http.ssl.enabled
+              value: "true"
+            - name: xpack.security.http.ssl.key
+              value: certs/es01.key
+            - name: xpack.security.transport.ssl.certificate
+              value: certs/es01.crt
+            - name: xpack.security.transport.ssl.certificate_authorities
+              value: certs/ca.crt
+            - name: xpack.security.transport.ssl.enabled
+              value: "true"
+            - name: xpack.security.transport.ssl.key
+              value: certs/es01.key
+            - name: xpack.security.transport.ssl.verification_mode
+              value: certificate
+            - name: xpack.security.enrollment.enabled
+              value: "true"
           securityContext:
-            privileged: true  # メモリロックを有効にする
+            privileged: true
           livenessProbe:
             exec:
               command:
@@ -75,7 +75,6 @@ spec:  # レプリカ 仕様(spec) 定義
             periodSeconds: 10
             timeoutSeconds: 10
             initialDelaySeconds: 100
-          name: es01
           ports:
             - containerPort: 9200
               hostPort: 9200
@@ -84,11 +83,11 @@ spec:  # レプリカ 仕様(spec) 定義
             limits:
               memory: "1073741824"
           volumeMounts:
-            - mountPath: /usr/share/elasticsearch/config/certs  # NOTE: SSL resources should be placed in the [/usr/share/elasticsearch/config] directory"
+            - mountPath: /usr/share/elasticsearch/config/certs
               name: certs
       restartPolicy: Always
       volumes:
         - name: certs
           configMap:
-            name: es-certs-configmap  # 共有の ConfigMap を指定
+            name: es-certs-configmap
 status: {}
