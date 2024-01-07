@@ -1,13 +1,17 @@
-﻿# Elasticsearch, Kibana, and Logstash Docker Compose Setup / Kubernetes
+﻿### Elasticsearch, Kibana, and Logstash Docker Compose Setup / Kubernetes
 
 This Docker Compose / k8s configuration allows you to quickly set up and run Elasticsearch, Kibana, and Logstash with security features enabled.
 
-## Prerequisites
-
+### Prerequisites
 Before you begin, make sure you have Docker and Docker Compose installed on your machine.
 
-## Usage
+## Case 1: Simple Docker Compose Architect
 
+<img src='./single-node-multicontainer/compose-architect.svg' />
+
+> pls check [How to read the graph](https://github.com/pmsipilot/docker-compose-viz#how-to-read-the-graph) of my favorite repository `pmsipilot/docker-compose-viz` about each diagrams.
+
+#### Usage
 1. Clone this repository:
    ```bash
    git clone <repository-url>
@@ -15,7 +19,7 @@ Before you begin, make sure you have Docker and Docker Compose installed on your
 
 1. Navigate to the cloned directory:
     ```bash
-    cd <repository-directory>
+    cd <repository-directory>/single-node-multicontainer
     ```
 
 1. Create a .env file with the following environment variables:

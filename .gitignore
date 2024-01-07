@@ -16,8 +16,8 @@ single-node-multicontainer/logstash/config/certs/**
 single-node-multicontainer/logstash/config/logstash.conf
 single-node-multicontainer/logstash/config/logstash.yml
 single-node-multicontainer/docker-compose-resolve.yml
+# visualization cache
+single-node-multicontainer/.cache/**
 
 memo.txt
 
-# visualization cache
-.cache/**
