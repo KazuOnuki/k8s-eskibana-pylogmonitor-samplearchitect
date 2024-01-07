@@ -5,9 +5,20 @@ This Docker Compose / k8s configuration allows you to quickly set up and run Ela
 ### Prerequisites
 Before you begin, make sure you have Docker and Docker Compose installed on your machine.
 
-## Case 1: Simple Docker Compose Architect
+## Case 1: k8s Architect Overview
+###### k8s application process architecture 
+> The application processes within the red border are Kibana, Elasticsearch, and Logstash, which we are currently creating here. Please confirm the outbound communication from Kibana to Elasticsearch, and note that Logstash does not have communication dependencies with any other process.
 
-<img src='./single-node-multicontainer/compose-architect.png' />
+<img src='./assets/k8s-application-process.png' /> 
+
+###### k8s service architecture
+> 
+
+<img src='./assets/k8s-service.png' />
+
+## Case 2: Docker Compose Architect Overview
+
+<img src='./assets/compose-architect.png' />
 
 > pls check [How to read the graph](https://github.com/pmsipilot/docker-compose-viz#how-to-read-the-graph) of my favorite repository `pmsipilot/docker-compose-viz` about each diagrams.
 
