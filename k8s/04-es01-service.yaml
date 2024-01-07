@@ -1,19 +1,20 @@
 apiVersion: v1
-kind: Service  # クラスタ上のコンテナに対するエンドポイントの提供や、ラベルに一致するコンテナのディスカバリに利用されるリソースです。 ref: https://thinkit.co.jp/article/13738
+kind: Service
 metadata:
-  labels:  # UI/CLI における識別用
+  labels:
     io.kompose.service: es01
-  name: es01  # タイプの固有名
+  name: es01
 spec:
-  type: NodePort    #one of NodePor / LoadBalancer(aks 等の cloud provider の場合はこちらを指定して外部からアクセス可能なLoadBalancerを作成)
+  type: NodePort
   ports:
     - name: "9200"
-      port: 9200  # サービス (エンドポイント)のフロントの通信先ポート
-      targetPort: 9200  # サービス(エンドポイント) のバックエンドの通信先ポート
+      port: 9200
+      targetPort: 9200
     - name: "9300"
-      port: 9300  # サービス (エンドポイント)のフロントの通信先ポート
-      targetPort: 9300  # サービス(エンドポイント) のバックエンドの通信先ポート
-  selector:  # このサービス(エンドポイント)のバックエンドとなる、対象のラベルの POD 指定
+      port: 9300
+      targetPort: 9300
+  selector:
     io.kompose.service: es01
 status:
   loadBalancer: {}
+
