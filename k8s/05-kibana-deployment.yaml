@@ -55,14 +55,14 @@ spec:
             limits:
               memory: "1073741824"
           volumeMounts:
-            - mountPath: /usr/share/kibana/config/certs   # NOTE: SSL resources should be placed in the [/usr/share/elasticsearch/config] directory"
+            - mountPath: /usr/share/kibana/config/certs   # NOTE: SSL resources should be placed in the [/usr/share/kibana/config] directory"
               name: certs
-            - mountPath: /usr/share/kibana/config/kibana.yml   # NOTE: SSL resources should be placed in the [/usr/share/elasticsearch/config] directory"
+            - mountPath: /usr/share/kibana/config/kibana.yml   # NOTE: kibana YAML should be placed in the [/usr/share/kibana/config/kibana.yml]"
               name: certs
               subPath: kibana.yml
       restartPolicy: Always
       volumes:
         - name: certs
           configMap:
-            name: es-certs-configmap  # 共有の ConfigMap を指定
+            name: es-certs-configmap
 status: {}
