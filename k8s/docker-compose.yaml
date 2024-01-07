@@ -56,13 +56,13 @@ services:
         echo "================================================"
         echo "Createing logstash.yml";
         echo -ne "#this is logstash.yml
-        ELASTICSEARCH_PASSWORD: logstash_internal
-        ELASTICSEARCH_USERNAME: logstash_internal
-        ES_JAVA_OPTS: -Xmx2048m -Xms2048m
         http.host: \"0.0.0.0\"
         path.config: \"/usr/share/logstash/config/logstash.conf\"
-        xpack.monitoring.elasticsearch.url: \"https://es01:9200\"
+        xpack.monitoring.elasticsearch.hosts: \"https://es01:9200\"
         xpack.monitoring.enabled: \"false\"
+        # ref: https://www.elastic.co/guide/en/logstash/current/ls-security.html#ls-monitoring-user
+        xpack.monitoring.elasticsearch.username: logstash_internal
+        xpack.monitoring.elasticsearch.password: logstash_internal
         " | sed "s/^[ \t]*//" > config/logstash.yml;
         echo "================================================"
         echo ""

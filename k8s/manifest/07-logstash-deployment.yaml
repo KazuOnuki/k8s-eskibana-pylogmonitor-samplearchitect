@@ -23,10 +23,6 @@ spec:
             - -c
             - 'logstash-plugin install logstash-input-azure_blob_storage && logstash -f /usr/share/logstash/config/logstash.conf '
           env:
-            # - name: ELASTICSEARCH_PASSWORD
-            #   value: logstash_internal
-            # - name: ELASTICSEARCH_USERNAME
-            #   value: logstash_internal
             # - name: ES_JAVA_OPTS
             #   value: -Xmx2048m -Xms2048m"
             # - name: http.host
@@ -41,7 +37,9 @@ spec:
           livenessProbe:
             exec:
               command:
-                - curl -s -I http://localhost:9600 | grep -q 'HTTP/1.1 200 OK'
+                - bash
+                - -c
+                - 'curl -s -I http://localhost:9600 | grep -q "HTTP/1.1 200 OK"'
             failureThreshold: 120
             periodSeconds: 10
             timeoutSeconds: 10
