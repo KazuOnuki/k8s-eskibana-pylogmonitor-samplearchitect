@@ -7,14 +7,14 @@ Before you begin, make sure you have Docker and Docker Compose installed on your
 
 ## Case 1: k8s Architect Overview
 ###### k8s application process architecture 
-> The application processes within the red border are Kibana, Elasticsearch, and Logstash, which we are currently creating here. Please confirm the outbound communication from Kibana to Elasticsearch, and note that Logstash does not have communication dependencies with any other process.
+<img src='./assets/k8s-application-process.png' />
 
-<img src='./assets/k8s-application-process.png' /> 
+> The application processes within the red border are Kibana, Elasticsearch, and Logstash, which we are currently creating here. Please confirm the outbound communication from Kibana to Elasticsearch, and note that Logstash does not have communication dependencies with any other process. 
 
 ###### k8s service architecture
-> 
-
 <img src='./assets/k8s-service.png' />
+
+> it's creating components for Kibana, Elasticsearch, and Logstash as services. While allowing outbound communication from Kibana to Elasticsearch, Logstash performs outbound access to the internet.
 
 ## Case 2: Docker Compose Architect Overview
 
