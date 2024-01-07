@@ -1,67 +1,66 @@
-# ref: https://thinkit.co.jp/article/13610?page=0%2C1
-# Deploymentは複数のReplicaSetを管理することで、ローリングアップデートやロールバックなどを実現可能にするリソースです。
 apiVersion: apps/v1
-kind: Deployment  # replica set (Podのレプリカを生成し、指定した数のPodを維持し続けるリソース) を管理するリソース
-metadata:  # オブジェクトを一意に特定するための情報
-  labels:  # 効率的な検索・閲覧を可能にし、UIやCLI上での利用に最適です。 識別用途でない情報は、アノテーションを用いて記録されるべき (ref: https://kubernetes.io/ja/docs/concepts/overview/working-with-objects/labels/#ラベルを使う動機)
+kind: Deployment
+metadata:
+  labels:
     io.kompose.service: setup
-  name: setup  # そのタイプのリソースに固有の名前  (ref: https://kubernetes.io/ja/docs/concepts/overview/working-with-objects/names/)
-
-spec:  # レプリカセット spec
-  replicas: 1  # レプリカ (pod の指定維持数) は 1
+  name: setup
+spec:
+  replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: setup  # ラベル es01 にあったレプリカを作成する指令
-  template:  # Pod テンプレート
+      io.kompose.service: setup
+  template:
     metadata:
       labels:
         io.kompose.network/sample-pylogger-azblob-eskibana-default: "true"
         io.kompose.service: setup
     spec:
       containers:
-        - args:
+        - name: setup
+          image: docker.elastic.co/elasticsearch/elasticsearch:8.9.2
+          args:
             - bash
             - -c
-            - |2
-                echo "ls -l config/certs/・・・"
-                ls -l config/certs/
+            - |
+              echo "ls -l config/certs/..."
+              ls -l config/certs/
 
-                echo "Waiting for Elasticsearch availability";
-                until curl -s --cacert config/certs/ca.crt https://es01:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
-                
-                echo "Setting kibana_system password";
-                until curl -s -X POST --cacert config/certs/ca.crt -u "elastic:elastic" -H "Content-Type: application/json" https://es01:9200/_security/user/kibana_system/_password -d "{\"password\":\"kibana\"}" | grep -q "^{}"; do sleep 10; done;
-                
-                echo "Create logstash_writer role";
-                echo "ref: https://www.elastic.co/guide/en/logstash/7.17/ls-security.html#ls-http-auth-basic";
-                curl -s -X POST --cacert config/certs/ca.crt -u "elastic:elastic" -H "Content-Type: application/json" https://es01:9200/_security/role/logstash_writer -d "{\"cluster\":[\"manage_index_templates\",\"manage_ilm\",\"monitor\"],\"indices\":[{\"names\":[\"*\"],\"privileges\":[\"write\",\"create\",\"create_index\",\"manage\",\"manage_ilm\"]}]}" > /dev/null;
-                
-                echo "Create logstash_internal user";
-                curl -s -X POST --cacert config/certs/ca.crt -u "elastic:elastic" -H "Content-Type: application/json" https://es01:9200/_security/user/logstash_internal -d "{\"password\":\"logstash_internal\",\"roles\":[\"logstash_writer\"]}" > /dev/null;
-                
-                echo "Checking whether logstash_internal user exists..."
-                until curl -s -X GET --cacert config/certs/ca.crt -u "elastic:elastic" -H "Content-Type: application/json" https://es01:9200/_security/user/logstash_internal | grep -q "^{\"logstash_internal\":{\"username\":\"logstash_internal\","; do sleep 10; done;
-                
-                echo "logstash_internal user exists!!"
-                echo "All done!";
-          image: docker.elastic.co/elasticsearch/elasticsearch:8.9.2
+              echo "Waiting for Elasticsearch availability"
+              until curl -s --cacert config/certs/ca.crt https://es01:9200 | grep -q "missing authentication credentials"; do sleep 30; done
+
+              echo "Setting kibana_system password"
+              until curl -s -X POST --cacert config/certs/ca.crt -u "elastic:elastic" -H "Content-Type: application/json" https://es01:9200/_security/user/kibana_system/_password -d "{\"password\":\"kibana\"}" | grep -q "^{}"; do sleep 10; done
+
+              echo "Create logstash_writer role"
+              echo "ref: https://www.elastic.co/guide/en/logstash/7.17/ls-security.html#ls-http-auth-basic"
+              curl -s -X POST --cacert config/certs/ca.crt -u "elastic:elastic" -H "Content-Type: application/json" https://es01:9200/_security/role/logstash_writer -d "{\"cluster\":[\"manage_index_templates\",\"manage_ilm\",\"monitor\"],\"indices\":[{\"names\":[\"*\"],\"privileges\":[\"write\",\"create\",\"create_index\",\"manage\",\"manage_ilm\"]}]}" > /dev/null
+
+              echo "Create logstash_internal user"
+              curl -s -X POST --cacert config/certs/ca.crt -u "elastic:elastic" -H "Content-Type: application/json" https://es01:9200/_security/user/logstash_internal -d "{\"password\":\"logstash_internal\",\"roles\":[\"logstash_writer\"]}" > /dev/null
+
+              echo "Checking whether logstash_internal user exists..."
+              until curl -s -X GET --cacert config/certs/ca.crt -u "elastic:elastic" -H "Content-Type: application/json" https://es01:9200/_security/user/logstash_internal | grep -q "^{\"logstash_internal\":{\"username\":\"logstash_internal\","; do sleep 10; done
+
+              echo "logstash_internal user exists!!"
+              echo "All done!"
           livenessProbe:
             exec:
               command:
+                - 'bash'
+                - '-c'
                 - '[ -f config/certs/es01.crt ]'
             failureThreshold: 120
             periodSeconds: 1
             timeoutSeconds: 5
-          name: setup  # Pod 名
           resources: {}
           securityContext:
             runAsUser: 0
           volumeMounts:
-            - mountPath: /usr/share/elasticsearch/config/certs  # NOTE: SSL resources should be placed in the [/usr/share/elasticsearch/config] directory"
+            - mountPath: /usr/share/elasticsearch/config/certs
               name: certs
       restartPolicy: Always
       volumes:
         - name: certs
           configMap:
-            name: es-certs-configmap  # 追加した ConfigMap を指定
+            name: es-certs-configmap
 status: {}
