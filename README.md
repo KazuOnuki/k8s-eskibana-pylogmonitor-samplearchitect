@@ -78,8 +78,12 @@ output {
 
 # Step 6: Apply manifests within "./manifest" to the "eskibana" namespace
 6. kubectl apply -f ./manifest -n eskibana
+
+# Step 7: access to localhost:<k8s kibana server nodeport>
+7. kubectl get svc kibana -n eskibana --output=jsonpath='{.spec.ports[?(@.port==5601)].nodePort}'| xargs -I {} sh -c 'python ./sample-pylog.py && start http://localhost:{}'
 ```
 
+--------
 
 #### Case 2 (Docker Compose Architecture) Usage
 ```bash
@@ -87,9 +91,7 @@ output {
 # navigate to k8s dir
 cd single-node-multicontainer
 
-# Step 1: create docker compose
-docker-compose up
-
+# Step 1: edit ./.env for your preferrence
 
 # Step 2: Start Docker Compose
 docker-compose up
@@ -98,14 +100,14 @@ docker-compose up
 docker-compose ps
 ```
 
-**Finally we start sending logs to Logstash and explore your data in Kibana!!**
-
 Open your browser and go to `http://localhost:5601` to access Kibana.
 Log in with the following credentials:
 ```env
 Username: <your-elastic-search-username eg. elastic>
 Password: <your-elastic-search-pass eg. elastic>
 ```
+
+🎊🎊 **Finally we start sending logs to Logstash and explore your data in Kibana!!** 🎊🎊
 
 >Additional Information
 Elasticsearch is accessible at https://localhost:9200.
