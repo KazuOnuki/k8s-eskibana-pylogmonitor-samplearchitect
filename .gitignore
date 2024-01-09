@@ -29,4 +29,6 @@ single-node-multicontainer/.cache
 
 # logger log file
 ./output.log
+./k8s/output.log
+**/output.log
 #############
