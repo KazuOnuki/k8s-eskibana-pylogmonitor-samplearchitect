@@ -27,6 +27,10 @@ Before you begin, make sure you have Docker and Docker Compose installed on your
 -----
 #### Case 1 (k8s Architecture) Usage
 ```bash
+# you create python log
+## check repo: https://github.com/KazuOnuki/pylogger2azblob
+## NOTE: if you'd like to use other log infra, please execute it and accordingly customize k8s/config/logstash.conf 
+python ./sample-pylog.py
 
 # navigate to k8s dir
 cd k8s
