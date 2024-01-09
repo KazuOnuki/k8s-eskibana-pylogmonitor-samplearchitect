@@ -1,4 +1,0 @@
-﻿# ref: https://github.com/pmsipilot/docker-compose-viz
-
-# PowerShell
-docker run --rm -it --name dcv -v ${pwd}:/input pmsipilot/docker-compose-viz render -m image docker-compose.yml
