@@ -1,21 +1,32 @@
 # Environments
-# .env
+# .env#######
 .venv
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+#############
 
 # k8s config
-k8s/config/**
-k8s/01-configMap.yaml
+k8s/config/certs/**
+k8s/config/kibana.yml
+k8s/config/logstash.conf
+k8s/config/logstash.yml
 k8s/manifest/01-configMap.yaml
+#############
 
 # single-node-multicontainer config
 single-node-multicontainer/logstash/config/certs/**
 single-node-multicontainer/logstash/config/logstash.conf
 single-node-multicontainer/logstash/config/logstash.yml
 single-node-multicontainer/docker-compose-resolve.yml
+#############
+
 # visualization cache
-single-node-multicontainer/.ca
+single-node-multicontainer/.cache
+#############
+
+# logger log file
+./output.log
+#############
