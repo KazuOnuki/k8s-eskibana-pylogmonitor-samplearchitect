@@ -1,6 +1,8 @@
 ﻿### Elasticsearch, Kibana, and Logstash Docker Compose Setup / Kubernetes
-
 This Docker Compose / k8s configuration allows you to quickly set up and run Elasticsearch, Kibana, and Logstash with security features enabled.
+
+https://github.com/KazuOnuki/k8s-eskibana-pylogmonitor-samplearchitect/assets/93357408/78c70b45-236b-4da6-9d19-bb2cc2c5b390
+> Accessing the Kibana server deployed through Kubernetes via NodePort, this setup allows visualization of Python error logs logged in Azure Storage Blob by the `sample-pylog.py` script. After signing in with the username/password set in advance on Kubernetes, please note that in this repository, Azure blob logs are ETLed to Elastic using logstash plugins. However, you are free to customize the logstash.conf to connect to your preferred log infrastructure.
 
 ### Prerequisites
 Before you begin, make sure you have Docker and Docker Compose installed on your machine.
